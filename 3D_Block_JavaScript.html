@@ -1,0 +1,625 @@
+
+<script>
+var context;
+
+var x=500, xxx=500;
+var xx =450, xxxx=450;
+var z = 250, zz=300;
+var y=350, yy=350;
+var yyyy= 300, yyy=300;
+/////////////////////////////////////////////
+var ax=0, axxx=0;
+var axx =50, axxxx=50;
+var az = 250, azz=300;
+var ay=350, ayy=350;
+var ayyyy= 300, ayyy=300;
+//////////////////////////////////////////////
+
+
+
+
+
+var X = 500;
+var Y = 500;
+var a = 45/90 *Math.PI/2; // X, Y skreno plotis a - plotis projektavimo kampo
+var Mx = 315;
+var My = 500;
+var Mz = 400;
+/////////////////////////////////
+var Pt, At, Kt, Tt;
+var PPt, AAt, KKt, TTt;
+var Ptt, Att, Ktt, Ttt;
+var Pttt, Attt, Kttt, Tttt;
+///////////////////////////////////
+var Prt, Art, Krt, Trt;
+var PPrt, AArt, KKrt, TTrt;
+var Prtt, Artt, Krtt, Trtt;
+var Prttt, Arttt, Krttt, Trttt;
+
+var k =0.000002; // kazkokia konstanta kazkas
+var u, p; // man rods kazkas su vaizdo sukimu
+var rx = 400; // kazn man rods offsetas screenui
+var ry=400; // kazn
+var MCx, MCy; // reguliuoj man rods kord. greiciui nustatyt
+var U=x, P=y; // koord aplink ka reik suktis
+
+var vx=0, vxx=0, vxxx=0, vxxxx=0; // greiciai zodz
+var vy=0, vyy=0, vyyy=0, vyyyy=0;
+var vz=0; vzz=0;
+
+var vvx=0, vvxx=0, vvxxx=0, vvxxxx=0; // greiciai zodz
+var vvy=0, vvyy=0, vvyyy=0, vvyyyy=0;
+var vvz=0; vvzz=0;
+
+var suviox=-100, suvioxx=-100, suvioz, suviozz;
+var suviov=0, suviovv=0, suviovC = 5;
+var scoreV=0, scoreD=0;
+var suviovy=0, suviovyy=0;
+
+var FC=0.1, FCC=0.1;
+
+
+var jumpH = 15;
+
+var Pn, An, Hn, Hnn; // ai, sitie tai naudoju zodz gridui linijoms
+
+function init()
+{
+  context= myCanvas.getContext('2d');
+
+document.getElementById('myCanvas').addEventListener('mousemove', mouse);
+document.getElementById('myCanvas').addEventListener('click', press);
+
+window.addEventListener('keydown', key);
+
+  setInterval(draw,10);
+
+}
+
+function press()
+{
+if (MCx<200)
+{
+vx++;
+vxx++;
+vxxx++;
+vxxxx++;
+}
+if (MCx>600)
+{
+vx--;
+vxx--;
+vxxx--;
+vxxxx--;
+}
+if (MCy<200)
+{
+vy--;
+vyy--;
+vyyy--;
+vyyyy--;
+}
+if (MCy>600)
+{
+vy++;
+vyy++;
+vyyy++;
+vyyyy++;
+}
+}
+
+
+function key()
+{
+console.log(event.keyCode);
+
+if (event.keyCode == 87)
+My-=3;
+else if (event.keyCode == 83)
+My+=3;
+else if (event.keyCode ==65)
+Mx-=3;
+else if (event.keyCode == 68)
+Mx+=3;
+else if (event.keyCode == 16)
+Mz+=3;
+else if (event.keyCode == 17)
+Mz-=3;
+else if (event.keyCode == 69)
+a+=0.01;
+else if (event.keyCode == 81)
+a-=0.01;
+else if (event.keyCode == 98)
+U-=10;
+else if (event.keyCode == 104)
+U+=10;
+else if (event.keyCode == 90 &&  vy>-3)
+{
+vy--;
+vyy--;
+vyyy--;
+vyyyy--;
+}
+else if (event.keyCode == 88 && vy < 3 )
+{
+vy++;
+vyy++;
+vyyy++;
+vyyyy++;
+}
+
+else if (event.keyCode == 80 &&  vvy>-3)
+{
+vvy--;
+vvyy--;
+vvyyy--;
+vvyyyy--;
+
+}
+else if (event.keyCode == 79 && vvy < 3)
+{
+vvy++;
+vvyy++;
+vvyyy++;
+vvyyyy++;
+}
+/////////////////////////////////////////////////////////////
+else if (event.keyCode == 13 && z == 250)
+{
+vz+=jumpH;
+vzz+=jumpH;
+}
+else if (event.keyCode == 32 && az==250)
+{
+vvz+=jumpH;
+vvzz+=jumpH;
+}
+/////////////////////////////////////////////////////////////////////////////////
+else if (event.keyCode == 191 && (suviox<=ax || suviox>=xx))
+{
+suviox = x;
+suviov = -suviovC;
+suvioz = zz-25;
+suviovy=0;
+}
+else if (event.keyCode == 86 && (suvioxx>=x|| suvioxx<=axx))
+{
+suvioxx = ax;
+suviovv = suviovC;
+suviozz = azz-25;
+suviovyy=0;
+}
+/////////////////////////////////////////////////////////////////
+else if (event.keyCode == 190 && FC<0.1)
+{
+FC+=0.05;
+}
+else if (event.keyCode == 188 && FC>-0.1)
+{
+FC-=0.05;
+}
+
+
+else if (event.keyCode == 66 && FCC>-0.1)
+{
+FCC-=0.05;
+}
+
+else if (event.keyCode == 78 && FCC<0.1)
+{
+FCC+=0.05;
+}
+//////////////////////////////////
+
+
+else if (event.keyCode == 100)
+{
+for (var e=0; e<10000; e++)
+{
+var U=x, P=y; 
+//x+=0.0001;
+
+u = x;
+p = y;
+y-=k*(U-u);
+x+=k*(P-p);
+
+
+u = xx;
+p = yy;
+yy-=k*(U-u);
+xx+=k*(P-p);
+
+u = xxx;
+p = yyy;
+yyy-=k*(U-u);
+xxx+=k*(P-p);
+
+u=xxxx;
+p =yyyy;
+yyyy-=k*(U-u);
+xxxx+=k*(P-p);
+//y-=(Mx-x)/(y-yy)*0.0001;
+
+
+
+//My+=0.0001;
+//Mx-=0.0001;
+}
+}
+
+else if (event.keyCode == 102)
+{
+
+for (var e=0; e<10000; e++)
+{
+var U=x, P=y;
+//x+=0.0001;
+u = x;
+p = y;
+y+=k*(U-u);
+x-=k*(P-p);
+
+
+u = xx;
+p = yy;
+yy+=k*(U-u);
+xx-=k*(P-p);
+
+u = xxx;
+p = yyy;
+yyy+=k*(U-u);
+xxx-=k*(P-p);
+
+u=xxxx;
+p =yyyy;
+yyyy+=k*(U-u);
+xxxx-=k*(P-p);
+
+
+//My+=0.0001;
+//Mx-=0.0001;
+}
+//console.log(event.keyCode);
+//console.log(xx);
+}
+
+//console.log(U);
+
+}
+
+
+function mouse()
+{
+MCx=event.clientX;
+MCy=event.clientY;
+
+//console.log(event.clientX);
+}
+
+
+function draw()
+{
+//if (x-Mx>=X/2)
+Pt = (Mx-x)/(My-y)/Math.tan(a)*X/2;
+At = (Mx-xx)/(My-yy)/Math.tan(a)*X/2;
+Tt = (Mx-xxx)/(My-yyy)/Math.tan(a)*X/2;
+Kt = (Mx-xxxx)/(My-yyyy)/Math.tan(a)*X/2;
+
+PPt = (Mx-x)/(My-y)/Math.tan(a)*X/2;
+AAt = (Mx-xx)/(My-yy)/Math.tan(a)*X/2;
+TTt = (Mx-xxx)/(My-yyy)/Math.tan(a)*X/2;
+KKt = (Mx-xxxx)/(My-yyyy)/Math.tan(a)*X/2;
+
+Ptt = (Mz-z)/(My-y)/Math.tan(a)*X/2;
+Pttt = (Mz-zz)/(My-y)/Math.tan(a)*X/2;
+
+Att = (Mz-z)/(My-yy)/Math.tan(a)*X/2;
+Attt = (Mz-zz)/(My-yy)/Math.tan(a)*X/2;
+
+Ttt = (Mz-z)/(My-yyy)/Math.tan(a)*X/2;
+Tttt = (Mz-zz)/(My-yyy)/Math.tan(a)*X/2;
+
+Ktt = (Mz-z)/(My-yyyy)/Math.tan(a)*X/2;
+Kttt = (Mz-zz)/(My-yyyy)/Math.tan(a)*X/2;
+
+/////////////////////////////////////////////////
+
+Prt = (Mx-ax)/(My-ay)/Math.tan(a)*X/2;
+Art = (Mx-axx)/(My-ayy)/Math.tan(a)*X/2;
+Trt = (Mx-axxx)/(My-ayyy)/Math.tan(a)*X/2;
+Krt = (Mx-axxxx)/(My-ayyyy)/Math.tan(a)*X/2;
+
+PPrt = (Mx-ax)/(My-ay)/Math.tan(a)*X/2;
+AArt = (Mx-axx)/(My-ayy)/Math.tan(a)*X/2;
+TTrt = (Mx-axxx)/(My-ayyy)/Math.tan(a)*X/2;
+KKrt = (Mx-axxxx)/(My-ayyyy)/Math.tan(a)*X/2;
+
+Prtt = (Mz-az)/(My-ay)/Math.tan(a)*X/2;
+Prttt = (Mz-azz)/(My-ay)/Math.tan(a)*X/2;
+
+Artt = (Mz-az)/(My-ayy)/Math.tan(a)*X/2;
+Arttt = (Mz-azz)/(My-ayy)/Math.tan(a)*X/2;
+
+Trtt = (Mz-az)/(My-ayyy)/Math.tan(a)*X/2;
+Trttt = (Mz-azz)/(My-ayyy)/Math.tan(a)*X/2;
+
+Krtt = (Mz-az)/(My-ayyyy)/Math.tan(a)*X/2;
+Krttt = (Mz-azz)/(My-ayyyy)/Math.tan(a)*X/2;
+
+/////////////////////////////////////////////////////////////
+//Krttt = (Mz-300)/(My-325)/Math.tan(a)*X/2;
+//PPrt = (Mx-suviox)/(My-325)/Math.tan(a)*X/2;
+//PPrt = (Mx-suviox+20)/(My-325)/Math.tan(a)*X/2;
+
+
+
+console.log(vvyy);
+//console.log(suvioz);
+//console.log(MCy);
+///console.log(Tt);
+//console.log(Kt);
+
+
+
+
+
+  context.clearRect(0,0, 1280,900);
+  context.beginPath();
+  context.fillStyle="#0000ff";
+  // Draws a circle of radius 20 at the coordinates 100,100 on the canvas
+context.strokeStyle = '#ff0000';
+
+for (var n=-1000; n<2000; n+=50)
+{
+Pn = (Mz-250)/(My-n)/Math.tan(a)*X/2;
+An = (Mx-250)/(My-n)/Math.tan(a)*X/2;
+if (Pn>=0)
+{
+context.moveTo(An-1000, Pn+400);
+context.lineTo(An+1000, Pn+400);
+}
+}
+
+
+
+
+for (var n=-1000; n<2000; n+=50)
+{
+Pn = (Mx-n)/(My-400)/Math.tan(a)*X/2;
+Hn = (Mz-250)/(My-400)/Math.tan(a)*X/2;
+An = (Mx-n)/(My+1000)/Math.tan(a)*X/2;
+Hnn = (Mz-250)/(My+1000)/Math.tan(a)*X/2;
+//console.log(An);
+//if (Hn<=0)
+//Hn = (Mz-250)/(400-My)/Math.tan(a)*X/2;
+
+if ( Hn>=0)
+{
+context.moveTo(Pn+400, Hn+400);
+context.lineTo(An+400, Hnn+400);            
+//console.log(An);
+}
+}
+
+context.stroke();
+context.closePath();
+
+
+context.beginPath();
+
+context.strokeStyle = '#000000';
+
+
+
+//////////////////////////////
+suvioz+=suviovy;
+suviozz+=suviovyy;
+///////////////////////////////////////////////////////////////////////// Galima pakeist i FC ir FCC kontrolai <> ir BN
+suviovy+=vz*0.02;
+suviovyy+=vvz*0.02;
+
+context.moveTo((Mx-suviox)/(My-325)/Math.tan(a)*X/2+rx, (Mz-suvioz)/(My-325)/Math.tan(a)*X/2+400);
+context.lineTo((Mx-suviox+20)/(My-325)/Math.tan(a)*X/2+400, (Mz-suvioz)/(My-325)/Math.tan(a)*X/2+400); 
+
+context.moveTo((Mx-suvioxx)/(My-325)/Math.tan(a)*X/2+rx, (Mz-suviozz)/(My-325)/Math.tan(a)*X/2+400);
+context.lineTo((Mx-suvioxx+20)/(My-325)/Math.tan(a)*X/2+400, (Mz-suviozz)/(My-325)/Math.tan(a)*X/2+400);
+/////////////////////////////////////////////////// antras kubs
+
+
+
+
+ if (My-ay>0)
+context.moveTo(Prt+rx, Prttt+400);
+if (My-ayy>0)
+context.lineTo(Art+rx, Arttt+400);
+if (My-ayyyy>=0)
+context.lineTo(Krt+rx, Krttt+400);
+if (My-ayyy>=0)
+context.lineTo(Trt+rx, Trttt+400);
+if (My-ay>=0)
+context.lineTo(Prt+rx, Prttt+400);
+
+if (My-ay>=0)
+context.moveTo(Prt+rx, Prtt+400);
+if (My-ayy>=0)
+context.lineTo(Art+rx, Artt+400);
+if (My-ayyyy>=0)
+context.lineTo(Krt+rx, Krtt+400);
+if (My-ayyy>=0)
+context.lineTo(Trt+rx, Trtt+400);
+if (My-ay>=0)
+context.lineTo(Prt+rx, Prtt+400);
+
+
+if (My-ay>=0)
+context.moveTo(Prt+rx, Prtt+400);
+if (My-ay>=0)
+context.lineTo(Prt+rx, Prttt+400);
+
+
+if (My-ayy>=0)
+context.moveTo(Art+rx, Artt+400);
+if (My-ayy>=0)
+context.lineTo(Art+rx, Arttt+400);
+
+
+if (My-ayyy>=0)
+context.moveTo(Trt+rx, Trttt+400)
+if (My-ayyy>=0)
+context.lineTo(Trt+rx, Trtt+400);
+
+
+if (My-ayyyy>=0)
+context.moveTo(Krt+rx, Krtt+400);
+if (My-ayyyy>=0)
+context.lineTo(Krt+rx, Krttt+400);
+
+
+
+
+
+
+///////////////////////////////////////////////// pirms kubs
+
+if (My-y>=0)
+context.moveTo(Pt+rx, Ptt+400);
+if (My-yy>=0)
+context.lineTo(At+rx, Att+400);
+if (My-yyyy>=0)
+context.lineTo(Kt+rx, Ktt+400);
+if (My-yyy>=0)
+context.lineTo(Tt+rx, Ttt+400);
+if (My-y>=0)
+context.lineTo(Pt+rx, Ptt+400);
+
+ if (My-ay>0)
+context.moveTo(Pt+rx, Pttt+400);
+if (My-ayy>0)
+context.lineTo(At+rx, Attt+400);
+if (My-ayyyy>=0)
+context.lineTo(Kt+rx, Kttt+400);
+if (My-ayyy>=0)
+context.lineTo(Tt+rx, Tttt+400);
+if (My-ay>=0)
+context.lineTo(Pt+rx, Pttt+400);
+
+
+if (My-y>=0)
+context.moveTo(Pt+rx, Ptt+400);
+if (My-y>=0)
+context.lineTo(Pt+rx, Pttt+400);
+
+
+if (My-yy>=0)
+context.moveTo(At+rx, Att+400);
+if (My-yy>=0)
+context.lineTo(At+rx, Attt+400);
+
+
+if (My-yyy>=0)
+context.moveTo(Tt+rx, Tttt+400)
+if (My-yyy>=0)
+context.lineTo(Tt+rx, Ttt+400);
+
+
+if (My-yyyy>=0)
+context.moveTo(Kt+rx, Ktt+400);
+if (My-yyyy>=0)
+context.lineTo(Kt+rx, Kttt+400);
+/////////////////////////////////////////// 
+
+
+
+
+
+context.stroke();
+if (z>=250)
+{
+vz-=0.5;
+vzz-=0.5;
+}
+if (az>=250)
+{
+vvz-=0.5;
+vvzz-=0.5;
+}
+
+if (suviox>ax && suviox <axx && suvioz>az && suvioz<azz)
+{
+suviox=-500;
+suviov=0;
+suvioxx=-500;
+suviovv=0;
+scoreV++;
+alert(scoreV+ '  '+ scoreD);
+}
+if (suvioxx>xx && suvioxx <x && suviozz>z && suviozz<zz)
+{
+suvioxx=-500;
+suviovv=0;
+suviox=-500;
+suviov=0;
+scoreD++;
+alert(scoreV+ '  '+ scoreD);
+}
+
+
+////////////////////////////////
+x+=vx;
+xx+=vxx;
+xxx+=vxxx;
+xxxx+=vxxxx;
+
+y+=vy;
+yy+=vyy;
+yyy+=vyyy;
+yyyy+=vyyyy;
+
+z+=vz;
+zz+=vzz;
+/////////////////////////
+ax+=vvx;
+axx+=vvxx;
+axxx+=vvxxx;
+axxxx+=vvxxxx;
+
+ay+=vvy;
+ayy+=vvyy;
+ayyy+=vvyyy;
+ayyyy+=vvyyyy;
+
+az+=vvz;
+azz+=vvzz;
+
+suviox+=suviov;
+suvioxx+=suviovv;
+
+/////////////////////////// pasuminu greicius
+
+if (z<=250)
+{
+z=250;
+zz=300;
+vz=0;
+vzz=0;
+}
+if (az<=250)
+{
+az=250;
+azz=300;
+vvz=0;
+vvzz=0;
+}
+
+
+  context.closePath();
+  //context.fill();
+
+}
+
+</script>
+<body onLoad="init();">
+  <canvas id="myCanvas" width="1280" height="900" >
+  </canvas>
+</body>
